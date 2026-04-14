@@ -4,7 +4,6 @@
 ![Version](https://img.shields.io/badge/Version-1.0.0-blue)
 
 ## Table of Contents
-- [Title of the Project](#student-enrollment-form-using-jsonpowerdb)
 - [Description](#description)
 - [Illustrations](#illustrations)
 - [Benefits of using JsonPowerDB](#benefits-of-using-jsonpowerdb)
