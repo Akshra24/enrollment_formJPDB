@@ -20,8 +20,6 @@ The **Student Enrollment Form** is a full-fledged, web-based UI application func
 
 ## Illustrations
 
-*(Please save your screenshot as `screenshot.png` natively in the folder for this image to render)*
-
 ![Student Enrollment Form](screenshot.png)
 
 ## Benefits of using JsonPowerDB
