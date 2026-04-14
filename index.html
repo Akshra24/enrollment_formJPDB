@@ -5,9 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Enrollment Form</title>
-    <!-- Modern Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Basic CSS for styling is included from style.css -->
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -19,10 +17,8 @@
         </div>
 
         <form id="enrollmentForm" class="form-body">
-            <!-- Form Fields -->
             <div class="form-group">
                 <label for="rollNo">Roll No</label>
-                <!-- onchange triggers when value changes and field loses focus -->
                 <input type="number" id="rollNo" name="rollNo" onchange="checkRollNo()"
                     placeholder="Enter Roll Number to begin" required>
             </div>
@@ -56,7 +52,6 @@
                 <input type="text" id="address" name="address" placeholder="Enter Full Address" disabled required>
             </div>
 
-            <!-- Action buttons -->
             <div class="button-group">
                 <button type="button" id="saveBtn" class="btn-save" onclick="saveData()" disabled>Save</button>
                 <button type="button" id="updateBtn" class="btn-update" onclick="updateData()" disabled>Update</button>
@@ -65,10 +60,8 @@
         </form>
     </div>
 
-    <!-- Toast Notification Container -->
     <div id="toast-container"></div>
 
-    <!-- Script separated for clean logic -->
     <script src="script.js"></script>
 </body>
 

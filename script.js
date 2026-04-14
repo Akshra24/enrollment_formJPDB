@@ -1,4 +1,3 @@
-// Database details and configuration
 const CONNECTION_TOKEN = "90935282|-31949236191687444|90958080";
 const DB_NAME = "SCHOOL-DB";
 const REL_NAME = "STUDENT-TABLE";
@@ -6,7 +5,6 @@ const BASE_URL = "http://api.login2explore.com:5577";
 const IML_ENDPOINT = "/api/iml";
 const IRL_ENDPOINT = "/api/irl";
 
-// DOM Elements caching
 const rollNoInput = document.getElementById("rollNo");
 const fullNameInput = document.getElementById("fullName");
 const stuClassInput = document.getElementById("stuClass");
@@ -18,21 +16,17 @@ const saveBtn = document.getElementById("saveBtn");
 const updateBtn = document.getElementById("updateBtn");
 const resetBtn = document.getElementById("resetBtn");
 
-// Track the current record number for updates
 let currentRecordNo = "";
 
-// 4.A Initial State setup when page loads
 window.onload = () => {
     resetForm();
 };
 
-// --- Custom Toast Notification ---
 function showToast(message, type = 'info') {
     const container = document.getElementById("toast-container");
     const toast = document.createElement("div");
     toast.className = `toast ${type}`;
 
-    // Icon based on type
     let icon = '';
     if (type === 'success') icon = '✓';
     else if (type === 'error') icon = '⚠';
@@ -42,16 +36,13 @@ function showToast(message, type = 'info') {
 
     container.appendChild(toast);
 
-    // Trigger animation flow
     requestAnimationFrame(() => {
         setTimeout(() => toast.classList.add("show"), 10);
     });
 
-    // Hide after 3.5 seconds
     setTimeout(() => {
         toast.classList.remove("show");
         toast.classList.add("hide");
-        // Remove from DOM after hide animation finishes
         setTimeout(() => {
             if (toast.parentElement) {
                 toast.parentElement.removeChild(toast);
@@ -60,9 +51,7 @@ function showToast(message, type = 'info') {
     }, 3500);
 }
 
-// 4.F Reset Operation
 function resetForm() {
-    // Clear all form inputs
     rollNoInput.value = "";
     fullNameInput.value = "";
     stuClassInput.value = "";
@@ -72,7 +61,6 @@ function resetForm() {
 
     currentRecordNo = "";
 
-    // Reset disabled states (only Roll No enabled)
     rollNoInput.disabled = false;
     fullNameInput.disabled = true;
     stuClassInput.disabled = true;
@@ -80,19 +68,16 @@ function resetForm() {
     addressInput.disabled = true;
     enrollmentDateInput.disabled = true;
 
-    // Reset button disabled states
     saveBtn.disabled = true;
     updateBtn.disabled = true;
     resetBtn.disabled = true;
 
-    // Move cursor to Roll No field
     rollNoInput.focus();
 }
 
-// 4.B Check Roll No exists in JPDB
 async function checkRollNo() {
     const rollNo = rollNoInput.value.trim();
-    if (!rollNo) return; // Exit if blank
+    if (!rollNo) return;
 
     const getReqStr = createGETRequest(CONNECTION_TOKEN, DB_NAME, REL_NAME, JSON.stringify({ Roll_No: rollNo }));
 
@@ -100,14 +85,12 @@ async function checkRollNo() {
         const response = await executeCommandAtGivenBaseUrl(getReqStr, BASE_URL, IRL_ENDPOINT);
 
         if (response.status === 400) {
-            // Roll No does NOT exist - new entry
             enableFieldsForNew();
             fullNameInput.focus();
             showToast("New Roll Number! Enter details below.", 'info');
         } else if (response.status === 200) {
-            // Roll No EXISTS - handle update flow
             const resData = JSON.parse(response.data);
-            currentRecordNo = resData.rec_no; // Save record number for UPDATE request
+            currentRecordNo = resData.rec_no;
             fillData(resData.record);
             enableFieldsForUpdate();
             fullNameInput.focus();
@@ -119,9 +102,8 @@ async function checkRollNo() {
     }
 }
 
-// Helper to enable fields for NEW records
 function enableFieldsForNew() {
-    rollNoInput.disabled = true; // Lock roll no when proceeding to enter data
+    rollNoInput.disabled = true;
     fullNameInput.disabled = false;
     stuClassInput.disabled = false;
     birthDateInput.disabled = false;
@@ -133,9 +115,8 @@ function enableFieldsForNew() {
     resetBtn.disabled = false;
 }
 
-// Helper to enable fields for EXISTING records
 function enableFieldsForUpdate() {
-    rollNoInput.disabled = true; // Disable Roll No specifically required
+    rollNoInput.disabled = true;
     fullNameInput.disabled = false;
     stuClassInput.disabled = false;
     birthDateInput.disabled = false;
@@ -147,7 +128,6 @@ function enableFieldsForUpdate() {
     resetBtn.disabled = false;
 }
 
-// Extracted record mapping
 function fillData(record) {
     fullNameInput.value = record.FullName;
     stuClassInput.value = record.Class;
@@ -156,9 +136,7 @@ function fillData(record) {
     enrollmentDateInput.value = record.EnrollmentDate;
 }
 
-// 4.C Form Validation
 function validateData() {
-    // Enable roll no field momentarily to grab value since disabled inputs might skip validation or value retrieval based on browser behaviour, though JS gets it fine.
     const rollNo = rollNoInput.value.trim();
     const fullName = fullNameInput.value.trim();
     const stuClass = stuClassInput.value.trim();
@@ -166,13 +144,11 @@ function validateData() {
     const address = addressInput.value.trim();
     const enrollmentDate = enrollmentDateInput.value;
 
-    // Check if any field is empty
     if (!rollNo || !fullName || !stuClass || !birthDate || !address || !enrollmentDate) {
         showToast("All fields are required! Please fill out the entire form.", 'error');
         return null;
     }
 
-    // Creating JSON Object
     const dataObj = {
         Roll_No: rollNo,
         FullName: fullName,
@@ -185,10 +161,9 @@ function validateData() {
     return JSON.stringify(dataObj);
 }
 
-// 4.D Save Operation
 async function saveData() {
     const jsonStr = validateData();
-    if (!jsonStr) return; // Validation failed
+    if (!jsonStr) return;
 
     const putReqStr = createPUTRequest(CONNECTION_TOKEN, jsonStr, DB_NAME, REL_NAME);
 
@@ -206,12 +181,10 @@ async function saveData() {
     }
 }
 
-// 4.E Update Operation
 async function updateData() {
     const jsonStr = validateData();
     if (!jsonStr) return;
 
-    // Need to use the current record number for the update payload
     const updateReqStr = createUPDATERecordRequest(CONNECTION_TOKEN, jsonStr, DB_NAME, REL_NAME, currentRecordNo);
 
     try {
@@ -227,8 +200,6 @@ async function updateData() {
         showToast("Failed to communicate with DB.", 'error');
     }
 }
-
-// ------ Standard JPDB Helper Functions ------ //
 
 function createGETRequest(token, dbName, relName, jsonObjStr) {
     return "{\n"
@@ -262,20 +233,18 @@ function createUPDATERecordRequest(token, jsonObjStr, dbName, relName, reqId) {
         + "}";
 }
 
-// Reusable fetch function mapped to execute commands on JsonPowerDB API
 async function executeCommandAtGivenBaseUrl(reqString, dbBaseUrl, apiEndPointUrl) {
     const url = dbBaseUrl + apiEndPointUrl;
     try {
-        // As per JsonPowerDB requirements, use a POST request
         const response = await fetch(url, {
             method: 'POST',
             body: reqString,
             headers: {
-                'Content-Type': 'text/plain' // Typically JPDB accepts text/plain or raw body without much issue, but text/plain is standard for JS implementation boilerplate from Login2Xplore
+                'Content-Type': 'text/plain'
             }
         });
         const data = await response.json();
-        return data; // JS Object parsing JPDB JSON response structure {status, data, message}
+        return data;
     } catch (error) {
         throw error;
     }
